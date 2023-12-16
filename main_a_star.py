@@ -7,13 +7,13 @@ import time
 
 def plot_3d_grid_with_delay(grid, delay=0.1):
     fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
+    ax = fig.add_subplot(111, projection="3d")
 
     for point, status in grid.items():
         if status == "obstacle":
-            ax.scatter(point[0], point[1], point[2], color='black', marker='s')
+            ax.scatter(point[0], point[1], point[2], color="black", marker="s")
         else:
-            ax.scatter(point[0], point[1], point[2], color='white')
+            ax.scatter(point[0], point[1], point[2], color="white")
 
     plt.show(block=False)
     plt.pause(delay)
@@ -21,17 +21,24 @@ def plot_3d_grid_with_delay(grid, delay=0.1):
 
 def plot_a_star_path_on_grid(path, grid, delay=0.1):
     fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
+    ax = fig.add_subplot(111, projection="3d")
 
     # Plot the grid points first
     for point, status in grid.items():
         if status == "obstacle":
-            ax.scatter(point[0], point[1], point[2], color='red', marker='s')
+            ax.scatter(point[0], point[1], point[2], color="red", marker="s")
         else:
-            ax.scatter(point[0], point[1], point[2], color='green')
+            ax.scatter(point[0], point[1], point[2], color="green")
 
-    ax.text(2, 2, 3, 'Start: (0, 0, 0) \n Goal: (3, 4, 2)', color='red', fontsize=12)
-
+    ax.text(2, 2, 3, "Start: (0, 0, 0) \n Goal: (3, 4, 2)", color="red", fontsize=12)
+    ax.text(
+        -2,
+        3,
+        3,
+        "Time taken to find path is : " + str(totaltime),
+        color="green",
+        fontsize=12,
+    )
     plt.show(block=False)
     plt.pause(delay)
 
@@ -39,12 +46,18 @@ def plot_a_star_path_on_grid(path, grid, delay=0.1):
     for i in range(len(path) - 1):
         node1 = path[i]
         node2 = path[i + 1]
-        ax.plot([node1[0], node2[0]], [node1[1], node2[1]], [node1[2], node2[2]], color='blue', marker='o')
+        ax.plot(
+            [node1[0], node2[0]],
+            [node1[1], node2[1]],
+            [node1[2], node2[2]],
+            color="blue",
+            marker="o",
+        )
         plt.show(block=False)
         plt.pause(delay)
 
     for point in path:
-        ax.text(point[0], point[1], point[2], f'{point}', color='black', fontsize=8)
+        ax.text(point[0], point[1], point[2], f"{point}", color="black", fontsize=8)
 
     plt.show()
 
@@ -84,6 +97,8 @@ def a_star_3d(start, goal, grid):
 
         if current_node == goal:
             path.append(goal)
+            endtime = time.time()
+            print(endtime - starttime)
             return path
 
         path.append(current_node)
@@ -111,8 +126,6 @@ def a_star_3d(start, goal, grid):
                     neighbor, goal
                 )
                 heapq.heappush(open_set, (f_score[neighbor], neighbor))
-            # problem in tentative gscore maybe because the previous ath is not updated
-
     return None
 
 
@@ -197,12 +210,13 @@ grid = {
     (4, 4, 2): "empty",
 }
 
+starttime = time.time()
 path = a_star_3d(start, goal, grid)
+endtime = time.time()
+totaltime = endtime - starttime
 
 if path is not None:
     print("A* Path:", path)
-
-    # Plot 3D grid points with delay
 
     # Plot A* path on the same grid with delay
     plot_a_star_path_on_grid(path, grid, delay=0.1)
